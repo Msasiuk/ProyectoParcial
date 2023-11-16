@@ -5,62 +5,33 @@ public class GestionProfesores {
 
     // Lista de profesores
     private static List<Profesor> listaProfesores;
+
+    // Método para ver una lista de Profesores
     public static void verProfesores() {
         if (listaProfesores == null || listaProfesores.isEmpty()) {
             JOptionPane.showMessageDialog(null, "No hay profesores registrados.");
         } else {
             StringBuilder profesores = new StringBuilder("Profesores:\n");
             for (Profesor profesor : listaProfesores) {
-                profesores.append("Nombre: ").append(profesor.getNombre()).append("\n");
-                profesores.append("Apellido: ").append(profesor.getApellido()).append("\n");
-                profesores.append("DNI: ").append(profesor.getDni()).append("\n");
-                profesores.append("ID: ").append(profesor.getID()).append("\n");
-                if (profesor.getMateriaAsignado() != null) {
-                    profesores.append("Materia Asignada: ").append(profesor.getMateriaAsignado().getNombre()).append("\n");
-                } else {
-                    profesores.append("Materia Asignada: Ninguna\n");
-                }
+                profesores.append(obtenerInformacionProfesor(profesor)).append("\n");
                 profesores.append("----------------------\n");
             }
             JOptionPane.showMessageDialog(null, profesores.toString());
         }
     }
 
-    // Método para asignar materia a profesor y viceversa
-    public static void asignarMateriaAProfesor() {
-        if (listaProfesores == null || listaProfesores.isEmpty()) {
-            JOptionPane.showMessageDialog(null, "No hay profesores registrados para asignar materias.");
-            return;
+    private static String obtenerInformacionProfesor(Profesor profesor) {
+        StringBuilder infoProfesor = new StringBuilder();
+        infoProfesor.append("Nombre: ").append(profesor.getNombre()).append("\n");
+        infoProfesor.append("Apellido: ").append(profesor.getApellido()).append("\n");
+        infoProfesor.append("DNI: ").append(profesor.getDni()).append("\n");
+        infoProfesor.append("ID: ").append(profesor.getID()).append("\n");
+        if (profesor.getMateriaAsignado() != null) {
+            infoProfesor.append("Materia Asignada: ").append(profesor.getMateriaAsignado().getNombre()).append("\n");
+        } else {
+            infoProfesor.append("Materia Asignada: Ninguna\n");
         }
-        try {
-            int idMateria = Integer.parseInt(JOptionPane.showInputDialog("Ingrese el ID del curso:"));
-            int idProfesor = Integer.parseInt(JOptionPane.showInputDialog("Ingrese el ID del profesor:"));
-
-            // Verificar si el materia y el profesor existen
-            Materia materia = GestionMaterias.buscarMateriaPorID(idMateria);
-            Profesor profesor = buscarProfesorPorID(idProfesor);
-            if (materia != null && profesor != null) {
-                materia.setProfesorAsignado(profesor);
-                profesor.setMateriaAsignado(materia);
-                JOptionPane.showMessageDialog(null, "Materia asignada correctamente.");
-            } else {
-                JOptionPane.showMessageDialog(null, "No se encontró el materia y/o el profesor con los IDs proporcionados.");
-            }
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(null, "Error: Ingrese un número válido.");
-        } catch (NullPointerException e) {
-            JOptionPane.showMessageDialog(null, "Operación cancelada por el usuario.");
-        }
-    }
-
-    // Método para buscar un profesor por su ID
-    private static Profesor buscarProfesorPorID(int id) {
-        for (Profesor profesor : listaProfesores) {
-            if (profesor.getID() == id) {
-                return profesor;
-            }
-        }
-        return null;
+        return infoProfesor.toString();
     }
 
     // Método para crear profesores, si el arreglo es nulo lo inicializa, luego pide nombre y valida DNI
@@ -85,7 +56,7 @@ public class GestionProfesores {
     }
 
     // Método para obtener DNI
-        private static int obtenerDNI() {
+    private static int obtenerDNI() {
         int dni;
         do {
             try {
@@ -95,7 +66,7 @@ public class GestionProfesores {
                 }
                 dni = Integer.parseInt(dniStr);
                 if (dni <= 1000000 || dni > 99999999) {
-                    throw new IllegalArgumentException("DNI debe ser un número positivo.");
+                    throw new IllegalArgumentException("DNI debe encontrarse entre 1.000.000 y 99.999.999.");
                 }
                 return dni;
             } catch (NumberFormatException e) {
@@ -116,22 +87,86 @@ public class GestionProfesores {
         return false;
     }
 
-    // Método para eliminar un profesor, si tiene asignada una materia también lo elimina de ahí
+    // Método para asignar materia a profesor y viceversa
+    public static void asignarMateriaAProfesor() {
+        if (listaProfesores == null || listaProfesores.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "No hay profesores registrados para asignar materias.");
+            return;
+        }
+        try {
+            int idProfesor = Integer.parseInt(JOptionPane.showInputDialog("Ingrese el ID del profesor:"));
+            int idMateria = Integer.parseInt(JOptionPane.showInputDialog("Ingrese el ID del curso:"));
+            Materia materia = GestionMaterias.buscarMateriaPorID(idMateria);
+            Profesor profesor = buscarProfesorPorID(idProfesor);
+            asignarMateria(profesor, materia);
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(null, "Error: Ingrese un número válido.");
+        } catch (NullPointerException e) {
+            JOptionPane.showMessageDialog(null, "Operación cancelada por el usuario.");
+        }
+    }
+
+    // Método para buscar un profesor por su ID
+    private static Profesor buscarProfesorPorID(int id) {
+        for (Profesor profesor : listaProfesores) {
+            if (profesor.getID() == id) {
+                return profesor;
+            }
+        }
+        return null;
+    }
+
+    // Método para asignar materia a profesor
+    private static void asignarMateria(Profesor profesor, Materia materia) {
+        if (materia != null && profesor != null) {
+            if (materia.getProfesorAsignado() != null) {
+                JOptionPane.showMessageDialog(
+                        null,
+                        "Esta materia ya está asignada. No se puede cambiar la asignación."
+                );
+                return;
+            }
+            if (profesor.getMateriaAsignado() != null) {
+                JOptionPane.showMessageDialog(
+                        null,
+                        "Este profesor ya tiene asignada la materia: " + profesor.getMateriaAsignado().getNombre() +
+                                ". No se puede cambiar la asignación."
+                );
+                return;
+            }
+            materia.setProfesorAsignado(profesor);
+            profesor.setMateriaAsignado(materia);
+            JOptionPane.showMessageDialog(null, "Materia asignada correctamente.");
+        } else {
+            JOptionPane.showMessageDialog(null, "No se encontró la materia y/o el profesor con los IDs proporcionados.");
+        }
+    }
+
+        // Método para eliminar un profesor, si tiene asignada una materia también lo elimina de ahí
     public static void eliminarProfesor() {
         if (listaProfesores == null || listaProfesores.isEmpty()) {
             JOptionPane.showMessageDialog(null, "No hay profesores registrados para eliminar.");
             return;
         }
-        int idProfesorEliminar = Integer.parseInt(JOptionPane.showInputDialog("Ingrese el ID del profesor a eliminar:"));
-        Profesor profesorAEliminar = buscarProfesorPorID(idProfesorEliminar);
-        if (profesorAEliminar != null) {
-            listaProfesores.remove(profesorAEliminar);
-            if (profesorAEliminar.getMateriaAsignado() != null) {
-                profesorAEliminar.getMateriaAsignado().setProfesorAsignado(null);
+        String inputIdProfesorEliminar = JOptionPane.showInputDialog("Ingrese el ID del profesor a eliminar:");
+        if (inputIdProfesorEliminar == null) {
+            JOptionPane.showMessageDialog(null, "Operación cancelada por el usuario.");
+            return;
+        }
+        try {
+            int idProfesorEliminar = Integer.parseInt(inputIdProfesorEliminar);
+            Profesor profesorAEliminar = buscarProfesorPorID(idProfesorEliminar);
+            if (profesorAEliminar != null) {
+                listaProfesores.remove(profesorAEliminar);
+                if (profesorAEliminar.getMateriaAsignado() != null) {
+                    profesorAEliminar.getMateriaAsignado().setProfesorAsignado(null);
+                }
+                JOptionPane.showMessageDialog(null, "Profesor eliminado correctamente.");
+            } else {
+                JOptionPane.showMessageDialog(null, "No se encontró ningún profesor con el ID proporcionado.");
             }
-            JOptionPane.showMessageDialog(null, "Profesor eliminado correctamente.");
-        } else {
-            JOptionPane.showMessageDialog(null, "No se encontró ningún profesor con el ID proporcionado.");
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(null, "Error: Ingrese un número válido.");
         }
     }
 }

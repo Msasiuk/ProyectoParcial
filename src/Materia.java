@@ -17,6 +17,15 @@ public class Materia {
     public ArrayList<Alumno> getListaEstudiantes() {
         return listaAlumnos;
     }
+
+    public ArrayList<Alumno> getListaAlumnos() {
+        return listaAlumnos;
+    }
+
+    public void setListaAlumnos(Alumno alumno) {
+        this.listaAlumnos.add(alumno);
+    }
+
     public String getNombre() {
         return nombre;
     }
@@ -35,4 +44,5 @@ public class Materia {
             listaAlumnos.add(alumno);
         }
     }
+
 }

@@ -6,8 +6,7 @@ public class ManejadorMenu {
     public void mostrarMenu() {
         while (true) {
             String[] opciones = {"Gestión Materias", "Gestión Profesores", "Gestión Alumnos", "Salir"};
-            int seleccion = JOptionPane.showOptionDialog(null, "Seleccione una opción:", "Menú Principal",
-                    JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, opciones, opciones[0]);
+            int seleccion = mostrarOpciones("Seleccione una opción:", "Menú Principal", opciones);
             switch (seleccion) {
                 case 0: // Gestión Materias
                     gestionMaterias();
@@ -24,12 +23,12 @@ public class ManejadorMenu {
             }
         }
     }
+
     private void gestionMaterias() {
         int contador = 1;
         do {
             String[] opciones = {"Ver Materias", "Crear Nueva Materia", "Eliminar Materia", "Salir"};
-            int seleccion = JOptionPane.showOptionDialog(null, "Seleccione una opción:", "Gestión Materias",
-                    JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, opciones, opciones[0]);
+            int seleccion = mostrarOpciones("Seleccione una opción:", "Gestión Materias", opciones);
             switch (seleccion) {
                 case 0: // Ver Materias
                     GestionMaterias.verMaterias();
@@ -46,39 +45,37 @@ public class ManejadorMenu {
             }
         } while (contador != 0);
     }
+
     private void gestionProfesores() {
         int contador = 1;
         do {
-        String[] opciones = {"Ver Profesores", "Crear nuevo Profesor", "Asignar Curso a Profesor", "Eliminar Profesor", "Salir"};
-        int seleccion = JOptionPane.showOptionDialog(null, "Seleccione una opción:", "Gestión Profesores",
-                JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, opciones, opciones[0]);
-        switch (seleccion) {
-            case 0: // Ver Profesores
-                GestionProfesores.verProfesores();
-                break;
-            case 1: // Crear Nuevo Profesor
-                GestionProfesores.crearProfesor();
-                break;
-            case 2:
-                // Asignar Curso a Profesor
-                GestionProfesores.asignarMateriaAProfesor();
-                break;
-            case 3: // Eliminar Profesor
-                GestionProfesores.eliminarProfesor();
-                break;
-            case 4: // Salir
-                contador = 0;
-                break;
+            String[] opciones = {"Ver Profesores", "Crear nuevo Profesor", "Asignar Curso a Profesor", "Eliminar Profesor", "Salir"};
+            int seleccion = mostrarOpciones("Seleccione una opción:", "Gestión Profesores", opciones);
+            switch (seleccion) {
+                case 0: // Ver Profesores
+                    GestionProfesores.verProfesores();
+                    break;
+                case 1: // Crear Nuevo Profesor
+                    GestionProfesores.crearProfesor();
+                    break;
+                case 2: // Asignar Curso a Profesor
+                    GestionProfesores.asignarMateriaAProfesor();
+                    break;
+                case 3: // Eliminar Profesor
+                    GestionProfesores.eliminarProfesor();
+                    break;
+                case 4: // Salir
+                    contador = 0;
+                    break;
             }
         } while (contador != 0);
     }
 
-   private void gestionAlumnos() {
+    private void gestionAlumnos() {
         int contador = 1;
         do {
             String[] opciones = {"Ver Alumnos", "Crear nuevo Alumno", "Asignar Materia a Alumno", "Eliminar Alumno", "Gestion Calificaciones", "Salir"};
-            int seleccion = JOptionPane.showOptionDialog(null, "Seleccione una opción:", "Gestión Alumno",
-                    JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, opciones, opciones[0]);
+            int seleccion = mostrarOpciones("Seleccione una opción:", "Gestión Alumno", opciones);
             switch (seleccion) {
                 case 0: // Ver Alumno
                     GestionAlumnos.verAlumnos();
@@ -86,23 +83,15 @@ public class ManejadorMenu {
                 case 1: // Crear Nuevo Alumno
                     GestionAlumnos.crearAlumno();
                     break;
-                case 2:
-                    // Asignar Curso a Alumno
+                case 2: // Asignar Curso a Alumno
                     GestionAlumnos.asignarAlumnoAMateria();
                     break;
                 case 3: // Eliminar Alumno
                     GestionAlumnos.eliminarAlumno();
                     break;
                 case 4: // Gestion Calificaciones
-                    Alumno alumnoSeleccionado = seleccionarAlumno();
-                    if (alumnoSeleccionado != null && !alumnoSeleccionado.getListaMaterias().isEmpty()) {
-                        Materia materiaSeleccionada = seleccionarMateria(alumnoSeleccionado.getListaMaterias());
-                        gestionCalificaciones(alumnoSeleccionado, materiaSeleccionada);
-                        break;
-                    } else {
-                        JOptionPane.showMessageDialog(null, "El alumno no tiene materias asignadas.");
-                        break;
-                    }
+                    gestionCalificaciones();
+                    break;
                 case 5: // Salir
                     contador = 0;
                     break;
@@ -114,8 +103,7 @@ public class ManejadorMenu {
         int contador = 1;
         do {
             String[] opciones = {"Agregar Nota Examen", "Agregar Nota Trabajo Práctico", "Eliminar Notas", "Ver Notas", "Salir"};
-            int seleccion = JOptionPane.showOptionDialog(null, "Seleccione una opción:", "Gestión de Calificaciones",
-                    JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, opciones, opciones[0]);
+            int seleccion = mostrarOpciones("Seleccione una opción:", "Gestión de Calificaciones", opciones);
             switch (seleccion) {
                 case 0: // Agregar Nota Examen
                     GestionCalificaciones.agregarNotaExamen(alumno, materia);
@@ -134,6 +122,20 @@ public class ManejadorMenu {
                     break;
             }
         } while (contador != 0);
+    }
+
+    private void gestionCalificaciones() {
+        Alumno alumnoSeleccionado = seleccionarAlumno();
+        if (alumnoSeleccionado != null && !alumnoSeleccionado.getListaMaterias().isEmpty()) {
+            Materia materiaSeleccionada = seleccionarMateria(alumnoSeleccionado.getListaMaterias());
+            gestionCalificaciones(alumnoSeleccionado, materiaSeleccionada);
+        } else {
+            JOptionPane.showMessageDialog(null, "El alumno no tiene materias asignadas.");
+        }
+    }
+    private int mostrarOpciones(String mensaje, String titulo, String[] opciones) {
+        return JOptionPane.showOptionDialog(null, mensaje, titulo, JOptionPane.DEFAULT_OPTION,
+                JOptionPane.PLAIN_MESSAGE, null, opciones, opciones[0]);
     }
     private Alumno seleccionarAlumno() {
         if (GestionAlumnos.getListaAlumnos() == null || GestionAlumnos.getListaAlumnos().isEmpty()) {

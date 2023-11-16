@@ -11,11 +11,14 @@ public class GestionCalificaciones {
             return;
         }
         int nuevaNotaExamen = obtenerNota("Ingrese la nota del examen para la materia " + materia.getNombre() + ":");
-        nuevaCalificacion.setNotasExamenes(nuevaNotaExamen);
-        nuevaCalificacion.setMateriaCalif(materia);
         Map<Materia, Calificacion> calificacionesPorCurso = alumno.getCalificacionesPorCurso();
-        calificacionesPorCurso.put(materia, nuevaCalificacion);
-        alumno.setCalificacionesPorCurso(materia, calificacionesPorCurso);
+        Calificacion calificacionExistente = calificacionesPorCurso.get(materia);
+        if (calificacionExistente == null) {
+            calificacionExistente = new Calificacion();
+            calificacionesPorCurso.put(materia, calificacionExistente);
+        }
+        calificacionExistente.setNotasExamenes(nuevaNotaExamen);
+        calificacionExistente.setMateriaCalif(materia);
         JOptionPane.showMessageDialog(null, "Nota de examen agregada correctamente para la materia: " + materia.getNombre());
     }
 
@@ -27,11 +30,14 @@ public class GestionCalificaciones {
             return;
         }
         int nuevaNotaTP = obtenerNota("Ingrese la nota del trabajo práctico para la materia " + materia.getNombre() + ":");
-        nuevaCalificacion.setNotasTP(nuevaNotaTP);
-        nuevaCalificacion.setMateriaCalif(materia);
         Map<Materia, Calificacion> calificacionesPorCurso = alumno.getCalificacionesPorCurso();
-        calificacionesPorCurso.put(materia, nuevaCalificacion);
-        alumno.setCalificacionesPorCurso(materia, calificacionesPorCurso);
+        Calificacion calificacionExistente = calificacionesPorCurso.get(materia);
+        if (calificacionExistente == null) {
+            calificacionExistente = new Calificacion();
+            calificacionesPorCurso.put(materia, calificacionExistente);
+        }
+        calificacionExistente.setNotasTP(nuevaNotaTP);
+        calificacionExistente.setMateriaCalif(materia);
         JOptionPane.showMessageDialog(null, "Nota de trabajo práctico agregada correctamente para la materia: " + materia.getNombre());
     }
 
@@ -56,24 +62,6 @@ public class GestionCalificaciones {
         } while (true);
     }
 
-    // Método para eliminar todas las notas del alumno en una materia especifica
-    public static void eliminarNotas(Alumno alumno, Materia materia) {
-        int confirmacion = JOptionPane.showConfirmDialog(
-                null,
-                "¿Está seguro de que desea eliminar todas las notas del alumno para la materia " + materia.getNombre() + "?",
-                "Confirmar Eliminación de Notas",
-                JOptionPane.YES_NO_OPTION
-        );
-        if (confirmacion == JOptionPane.YES_OPTION) {
-            Map<Materia, Calificacion> calificacionesPorCurso = alumno.getCalificacionesPorCurso();
-            calificacionesPorCurso.remove(materia);
-            alumno.setCalificacionesPorCurso(materia, calificacionesPorCurso);
-            JOptionPane.showMessageDialog(null, "Notas eliminadas correctamente para la materia: " + materia.getNombre());
-        } else {
-            JOptionPane.showMessageDialog(null, "La eliminación de notas ha sido cancelada.");
-        }
-    }
-
     // Método para ver las Notas del alumno en una materia específica
     public static void verNotas(Alumno alumno, Materia materiaSeleccionada) {
         if (alumno.getCalificacionesPorCurso().isEmpty()) {
@@ -96,5 +84,23 @@ public class GestionCalificaciones {
             notas.append("----------------------\n");
         }
         JOptionPane.showMessageDialog(null, notas.toString(), "Notas del Alumno", JOptionPane.PLAIN_MESSAGE);
+    }
+
+    // Método para eliminar todas las notas del alumno en una materia especifica
+    public static void eliminarNotas(Alumno alumno, Materia materia) {
+        int confirmacion = JOptionPane.showConfirmDialog(
+                null,
+                "¿Está seguro de que desea eliminar todas las notas del alumno para la materia " + materia.getNombre() + "?",
+                "Confirmar Eliminación de Notas",
+                JOptionPane.YES_NO_OPTION
+        );
+        if (confirmacion == JOptionPane.YES_OPTION) {
+            Map<Materia, Calificacion> calificacionesPorCurso = alumno.getCalificacionesPorCurso();
+            calificacionesPorCurso.remove(materia);
+            alumno.setCalificacionesPorCurso(materia, calificacionesPorCurso);
+            JOptionPane.showMessageDialog(null, "Notas eliminadas correctamente para la materia: " + materia.getNombre());
+        } else {
+            JOptionPane.showMessageDialog(null, "La eliminación de notas ha sido cancelada.");
+        }
     }
 }
